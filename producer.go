@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"time"
@@ -9,23 +10,26 @@ import (
 	"github.com/streadway/amqp"
 )
 
+func LogIfError(fatal bool, err error, msg string) {
+	if err != nil {
+		if fatal {
+			log.Fatalf("Error: %s \nmsg: %s", err, msg)
+		} else {
+			log.Printf("Error: %s \nmsg: %s", err, msg)
+		}
+	}
+}
+
 func main() {
-	fmt.Println("Rabbitmq")
 	rmq_env := os.Getenv("RMQ_ENV")
 	conn, err := amqp.Dial(rmq_env)
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
+	LogIfError(true, err, "Error con	if err{necting to RabbitMQ instance")
 	defer conn.Close()
 
 	fmt.Println("connected to rabbitmq instance")
 
 	ch, err := conn.Channel()
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
+	LogIfError(true, err, "Failed to open a channel")
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
@@ -36,12 +40,7 @@ func main() {
 		false,
 		nil,
 	)
-
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
+	LogIfError(true, err, "Failed to declare Queue")
 	fmt.Println(q)
 
 	s1 := rand.NewSource(time.Now().UnixNano())
@@ -57,10 +56,6 @@ func main() {
 			Body:        []byte(str),
 		},
 	)
-
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
+	LogIfError(true, err, "Failed to publish to work queue")
 	fmt.Println("Message published:", str)
 }
