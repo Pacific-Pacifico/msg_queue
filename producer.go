@@ -23,7 +23,7 @@ func LogIfError(fatal bool, err error, msg string) {
 func main() {
 	rmq_env := os.Getenv("RMQ_ENV")
 	conn, err := amqp.Dial(rmq_env)
-	LogIfError(true, err, "Error con	if err{necting to RabbitMQ instance")
+	LogIfError(true, err, "Error connecting to RabbitMQ instance")
 	defer conn.Close()
 
 	fmt.Println("connected to rabbitmq instance")
