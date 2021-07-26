@@ -41,5 +41,5 @@ func OpenChannel() {
 func main() {
 	getAmqpConnection()
 	OpenChannel()
-	addToQueue("sample.mp4")
+	addToQueue("/home/pacific/myprograms/go/video_transcoder/temp/sample.mp4")
 }
